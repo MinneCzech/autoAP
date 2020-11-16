@@ -26,9 +26,9 @@ Download install-autoAP, autoAP.sh, and rpi-networkconfig to /usr/local/bin on y
 
 Download/install directions:
 
-* `sudo curl -L https://github.com/gitbls/autoAP/raw/master/autoAP.sh -o /usr/local/bin/autoAP.sh`
-* `sudo curl -L https://github.com/gitbls/autoAP/raw/master/install-autoAP -o /usr/local/bin/install-autoAP`
-* `sudo curl -L https://github.com/gitbls/autoAP/raw/master/rpi-networkconfig -o /usr/local/bin/rpi-networkconfig`
+* `sudo curl -L https://github.com/MinneCzech/autoAP/raw/master/autoAP.sh -o /usr/local/bin/autoAP.sh`
+* `sudo curl -L https://github.com/MinneCzech/autoAP/raw/master/install-autoAP -o /usr/local/bin/install-autoAP`
+* `sudo curl -L https://github.com/MinneCzech/autoAP/raw/master/rpi-networkconfig -o /usr/local/bin/rpi-networkconfig`
 * `sudo chmod 755 /usr/local/bin/autoAP.sh /usr/local/bin/install-autoAP /usr/local/bin/rpi-networkconfig`
 * `sudo /usr/local/bin/install-autoAP`
 
@@ -55,7 +55,7 @@ install-autoAP will configure your system for autoAP. The detailed steps are des
 
 As a last step, install-autoAP will remind you to switch to systemd-networkd if it is not currently running on the Pi.
 
-`/usr/local/bin/rpi-networkconfig` will make the appropriate network software configuration changes to enable your selected network "machinery". rpi-networkconfig can switch between dhcpcd, systemd-networkd, and NetworkManager, although configuration files are only created for systemd-networkd. rpi-networkconfig will not overwrite the configuration written by install-autoAP. rpi-networkconfig will create /etc/systemd/system/10-eth0.network for your Ethernet device, and it will be set for DHCP operation. 
+`/usr/local/bin/rpi-networkconfig` will make the appropriate network software configuration changes to enable your selected network "machinery". rpi-networkconfig can switch between dhcpcd, systemd-networkd, and NetworkManager, although configuration files are only created for systemd-networkd. rpi-networkconfig will not overwrite the configuration written by install-autoAP. rpi-networkconfig will create /etc/systemd/system/10-eth0.network for your Ethernet device, and it will be set for DHCP operation.
 
 In sommary, the network configuration files for systemd-networkd in **/etc/systemd/network**:
 
@@ -73,9 +73,9 @@ If you made it this far, it's time to reboot!
 ## Operation
 
 ### Usage
-If you are planning to use autoAP, make sure that wpa-autoap@wlan0 service is enabled. If you aren't planning to use autoAP, you can (but don't need to, as it's very lightweight) simply disable wpa-autoap@wlan0 and the network will behave normally. 
+If you are planning to use autoAP, make sure that wpa-autoap@wlan0 service is enabled. If you aren't planning to use autoAP, you can (but don't need to, as it's very lightweight) simply disable wpa-autoap@wlan0 and the network will behave normally.
 
-To enable: 
+To enable:
 
 * `sudo systemctl enable wpa-autoap@wlan0` and then restart the system
 
@@ -88,7 +88,7 @@ To disable:
 
 ### Detailed Operational Description
 
-The system startup will proceed normally. The wpa-autoap@wlan0 service is bound to the service wpa_supplicant@wlan0, so systemd will start it automatically if it's enabled. wpa_supplicant@wlan0 is running the same old wpa_supplicant, so it will process WiFi connects, disconnects, etc, just as before. 
+The system startup will proceed normally. The wpa-autoap@wlan0 service is bound to the service wpa_supplicant@wlan0, so systemd will start it automatically if it's enabled. wpa_supplicant@wlan0 is running the same old wpa_supplicant, so it will process WiFi connects, disconnects, etc, just as before.
 
 If wpa_supplicant times out trying to connect to your WiFi (for instance, if the Pi is not at home or your router/access point is down), it will then look at the next defined network (the autoap Access Point network), which changes the wpa_supplicant mode to AP. A message is sent to wpa-autoap (wpa_cli), which calls /usr/local/bin/autoAP.sh with the network name and the event AP-ENABLED. autoAP will reconfigure the network to Access Point mode, restart systemd-networkd, and call /usr/local/bin/autoap-local.sh to do any additional desired processing.
 

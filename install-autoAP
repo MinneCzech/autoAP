@@ -204,10 +204,12 @@ case "\$1" in
     Client)
           logmsg "/usr/local/bin/autoAP-local: Client"
 	  ## Add your code here that runs when the Client WiFi is enabled
+          sudo iptables -F 
 	  ;;
     AccessPoint)
           logmsg "/usr/local/bin/autoAP-local: Access Point"
 	  ## Add your code here that runs when the Access Point is enabled
+          sudo iptables -t nat -I PREROUTING -d 192.168.16.1 -p tcp --dport 80 -j DNAT --to-destination 192.168.16.1:3000
 	  ;;
 esac
 EOF
@@ -255,6 +257,7 @@ then
     echo "** Reminder: Your system must use systemd-networkd to work with autoAP"
     echo "             Look at /usr/local/bin/rpi-networkconfig"
     echo "             Do this before rebooting your system"
+    echo "             Make sure that wifi configuration is valid"
     echo ""
 fi
 echo ""
