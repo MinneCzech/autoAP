@@ -140,6 +140,9 @@ Name=wlan0
 DHCPServer=yes
 Address=$apip/24
 
+[DHCPServer]
+DNS=192.168.16.1
+
 EOF
 
 echo ""
