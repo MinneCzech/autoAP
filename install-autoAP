@@ -32,15 +32,17 @@ then
 fi
 
 echo ""
-echo -n "SSID for Access Point mode: "
+echo -n "SSID for Access Point mode [Krakem wifi]: "
 apssid=$(read ans; echo $ans)
-echo -n "Password for Access Point mode: "
+[ "$apssid" == "" ] && apssid="Krakem wifi"
+echo -n "Password for Access Point mode [krakemkrakem]: "
 appsk=$(read ans; echo $ans)
+[ "$appsk" == "" ] && appsk="krakemkrakem"
 echo -n "IPV4 address for Access Point mode [192.168.16.1]: "
 apip=$(read ans; echo $ans)
 [ "$apip" == "" ] && apip="192.168.16.1"
 apssid="${apssid//\"/}"   # Remove double quotes from SSID and password
-appsk="${appsk//\"/}" 
+appsk="${appsk//\"/}"
 #
 # Get existing WiFi configuration
 #
@@ -204,7 +206,7 @@ case "\$1" in
     Client)
           logmsg "/usr/local/bin/autoAP-local: Client"
 	  ## Add your code here that runs when the Client WiFi is enabled
-          sudo iptables -F 
+          sudo iptables -F
 	  ;;
     AccessPoint)
           logmsg "/usr/local/bin/autoAP-local: Access Point"
