@@ -99,12 +99,6 @@ ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 ap_scan=1
 
-network={
-    priority=10
-    ssid="$ssid"
-    psk="$psk"
-}
-
 ### autoAP access point ###
 network={
     ssid="$apssid"
@@ -113,7 +107,16 @@ network={
     psk="$appsk"
     frequency=2462
 }
+
+### local wifi ###
+network={
+    priority=10
+    ssid="$ssid"
+    psk="$psk"
+}
 EOF
+
+chown pi:pi $wpafn
 
 echo ""
 echo "Creating WiFi network files in /etc/systemd/network..."
