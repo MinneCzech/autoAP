@@ -47,6 +47,7 @@ appsk="${appsk//\"/}"
 # Get existing WiFi configuration
 #
 wpafn="/etc/wpa_supplicant/wpa_supplicant.conf"
+wpafnTemplate="/etc/wpa_supplicant/wpa_supplicant.conf_template"
 [ ! -f "$wpafn" -a -f "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf" ] && wpafn="/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
 if [ -f "$wpafn" ]
 then
@@ -115,6 +116,24 @@ network={
     psk="$psk"
 }
 EOF
+
+cat > $wpafnTemplate <<EOF
+country=$country
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+ap_scan=1
+
+### autoAP access point ###
+network={
+    ssid="$apssid"
+    mode=2
+    key_mgmt=WPA-PSK
+    psk="$appsk"
+    frequency=2462
+}
+
+EOF
+
 
 chown pi:pi $wpafn
 
