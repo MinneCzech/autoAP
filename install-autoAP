@@ -99,12 +99,6 @@ ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 ap_scan=1
 
-network={
-    priority=10
-    ssid="$ssid"
-    psk="$psk"
-}
-
 ### autoAP access point ###
 network={
     ssid="$apssid"
@@ -112,6 +106,13 @@ network={
     key_mgmt=WPA-PSK
     psk="$appsk"
     frequency=2462
+}
+
+### local wifi ###
+network={
+    priority=10
+    ssid="$ssid"
+    psk="$psk"
 }
 EOF
 
