@@ -269,6 +269,8 @@ systemctl daemon-reload
 echo "Modifying WPA services..."
 echo "Enabling wpa_supplicant@wlan1..."
 systemctl enable wpa_supplicant@wlan1
+echo "Enabling wpa_supplicant@wlan0..."
+systemctl enable wpa_supplicant@wlan0
 echo "Disabling (vanilla) wpa_supplicant..."
 systemctl disable wpa_supplicant
 echo ""
