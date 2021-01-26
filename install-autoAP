@@ -188,6 +188,20 @@ Address=$apip/24
 DNS=192.168.16.1
 
 EOF
+[ -f /etc/systemd/network/13-wlan0.network ] && mv /etc/systemd/network/13-wlan0.network /etc/systemd/network/.13-wlan0.network.bak
+[ -f /etc/systemd/network/13-wlan0.network~ ] && rm -f /etc/systemd/network/13-wlan0.network~
+cat > /etc/systemd/network/13-wlan0.network <<EOF
+[Match]
+Name=wlan0
+
+[Network]
+DHCP=ipv4
+
+[DHCP]
+RouteMetric=20
+UseDomains=yes
+
+EOF
 
 echo ""
 echo "Creating /etc/systemd/system/wpa-autoap@wlan1.service configuration file..."
