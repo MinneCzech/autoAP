@@ -27,7 +27,7 @@ function DisableSystemdNetworkd() {
     StopAndDisable systemd-resolved
     echo "You may need to futz with /etc/resolv.conf, this has not been tested"
     sed -i '1d' /etc/resolvconf.conf               # For systemd-resolved
-    StopAndDisable wpa_supplicant@wlan0
+    StopAndDisable wpa_supplicant@wlan1
 }
 
 function DisableNetworkManager() {
@@ -99,14 +99,14 @@ IPv4LL=false
 UseDomains=yes
 EOF
 	fi
-	fn="/etc/systemd/network/11-wlan0.network"
+	fn="/etc/systemd/network/11-wlan1.network"
 	if [ ! -e $fn ]
 	then
 	    echo "Creating $fn..."
 	    cat > $fn <<EOF
 
 [Match]
-Name=wlan0
+Name=wlan1
 
 [Network]
 DHCP=ipv4
@@ -118,7 +118,7 @@ EOF
 	fi
 	sed -i '1i resolvconf=NO' /etc/resolvconf.conf               # For systemd-resolved
 	ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf     # ...
-	EnableAndStart wpa_supplicant@wlan0
+	EnableAndStart wpa_supplicant@wlan1
 	EnableAndStart systemd-networkd
 	EnableAndStart systemd-resolved
 	;;

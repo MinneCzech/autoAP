@@ -21,7 +21,7 @@ then
     echo "? This system is not configured to use systemd-networkd"
     echo "  You must switch to using systemd-networkd to use autoAP"
     echo "  You can use /usr/local/bin/rpi-networkconfig to reconfigure your networking"
-    echo "  rpi-networkconfig will configure wlan0 and eth0 to be DHCP-enabled"
+    echo "  rpi-networkconfig will configure wlan1 and eth0 to be DHCP-enabled"
     echo "  This can be done after install-autoAP has completed."
     echo ""
     if ! askyn "Do you want to continue with autoAP installation"
@@ -48,7 +48,7 @@ appsk="${appsk//\"/}"
 #
 wpafn="/etc/wpa_supplicant/wpa_supplicant.conf"
 wpafnTemplate="/etc/wpa_supplicant/wpa_supplicant.conf_template"
-[ ! -f "$wpafn" -a -f "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf" ] && wpafn="/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
+[ ! -f "$wpafn" -a -f "/etc/wpa_supplicant/wpa_supplicant-wlan1.conf" ] && wpafn="/etc/wpa_supplicant/wpa_supplicant-wlan1.conf"
 if [ -f "$wpafn" ]
 then
     country=$(grep country= $wpafn | (IFS='='; read a b ; echo $b))
@@ -91,7 +91,7 @@ echo "Renaming $wpafn"
 echo " to ${wpafn}-orig to avoid future confusion..."
 [ -f ${wpafn}-orig ] && rm -f ${wpafn}-orig.bak && mv ${wpafn}-orig ${wpafn}-orig.bak
 mv $wpafn ${wpafn}-orig
-wpafn="/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"   # Always write to this config file
+wpafn="/etc/wpa_supplicant/wpa_supplicant-wlan1.conf"   # Always write to this config file
 echo ""
 echo "Creating $wpafn..."
 cat > $wpafn <<EOF
@@ -139,11 +139,11 @@ chown pi:pi $wpafn
 
 echo ""
 echo "Creating WiFi network files in /etc/systemd/network..."
-[ -f /etc/systemd/network/11-wlan0.network ] && mv /etc/systemd/network/11-wlan0.network /etc/systemd/network/.11-wlan0.network.bak
-[ -f /etc/systemd/network/11-wlan0.network~ ] && rm -f /etc/systemd/network/11-wlan0.network~
-cat > /etc/systemd/network/11-wlan0.network <<EOF
+[ -f /etc/systemd/network/11-wlan1.network ] && mv /etc/systemd/network/11-wlan1.network /etc/systemd/network/.11-wlan1.network.bak
+[ -f /etc/systemd/network/11-wlan1.network~ ] && rm -f /etc/systemd/network/11-wlan1.network~
+cat > /etc/systemd/network/11-wlan1.network <<EOF
 [Match]
-Name=wlan0
+Name=wlan1
 
 [Network]
 DHCP=ipv4
@@ -153,10 +153,10 @@ RouteMetric=20
 UseDomains=yes
 
 EOF
-[ -f /etc/systemd/network/12-wlan0AP.network ] && mv /etc/systemd/network/12-wlan0AP.network /etc/systemd/network/.12-wlan0AP.network.bak
-cat > /etc/systemd/network/12-wlan0AP.network <<EOF
+[ -f /etc/systemd/network/12-wlan1AP.network ] && mv /etc/systemd/network/12-wlan1AP.network /etc/systemd/network/.12-wlan1AP.network.bak
+cat > /etc/systemd/network/12-wlan1AP.network <<EOF
 [Match]
-Name=wlan0
+Name=wlan1
 
 [Network]
 DHCPServer=yes
@@ -168,11 +168,11 @@ DNS=192.168.16.1
 EOF
 
 echo ""
-echo "Creating /etc/systemd/system/wpa-autoap@wlan0.service configuration file..."
-[ -f /etc/systemd/network/wpa-autoap@wlan0.service ] && mv /etc/systemd/network/wpa-autoap@wlan0.service /etc/systemd/network/.wpa-autoap@wlan0.service.bak
-cat > /etc/systemd/system/wpa-autoap@wlan0.service <<EOF
+echo "Creating /etc/systemd/system/wpa-autoap@wlan1.service configuration file..."
+[ -f /etc/systemd/network/wpa-autoap@wlan1.service ] && mv /etc/systemd/network/wpa-autoap@wlan1.service /etc/systemd/network/.wpa-autoap@wlan1.service.bak
+cat > /etc/systemd/system/wpa-autoap@wlan1.service <<EOF
 [Unit]
-Description=autoAP Automatic Access Point When No WiFi Connection (wpa-autoap@wlan0.service)
+Description=autoAP Automatic Access Point When No WiFi Connection (wpa-autoap@wlan1.service)
 #After=network.target network-online.target wpa_supplicant@%i.service sys-subsystem-net-devices-%i.device
 Before=wpa_supplicant@%i.service
 BindsTo=wpa_supplicant@%i.service
@@ -190,10 +190,10 @@ EOF
 #
 # set up wpa-autoap-restore service
 # Needed in the case that
-#      * 11-wlan0.network is in the disabled state (there is a client connected)
-#      * wpa-autoap@wlan0 service is not enabled at reboot
+#      * 11-wlan1.network is in the disabled state (there is a client connected)
+#      * wpa-autoap@wlan1 service is not enabled at reboot
 #      * system reboots
-#      * 11-wlan0.network still in the disabled state, so no WiFi connection
+#      * 11-wlan1.network still in the disabled state, so no WiFi connection
 # This service should always be enabled. VERY low cost!
 #
 echo "Creating /etc/systemd/system/wpa-autoap-restore.service configuration file..."
@@ -245,14 +245,14 @@ chmod 755 /usr/local/bin/autoAP-local.sh
 echo ""
 systemctl daemon-reload
 echo "Modifying WPA services..."
-echo "Enabling wpa_supplicant@wlan0..."
-systemctl enable wpa_supplicant@wlan0
+echo "Enabling wpa_supplicant@wlan1..."
+systemctl enable wpa_supplicant@wlan1
 echo "Disabling (vanilla) wpa_supplicant..."
 systemctl disable wpa_supplicant
 echo ""
-echo "Enabling wpa-autoap@wlan0 service"
-echo "If you don't want it to be enabled, do: sudo systemctl disable wpa-autoap@wlan0"
-systemctl enable wpa-autoap@wlan0
+echo "Enabling wpa-autoap@wlan1 service"
+echo "If you don't want it to be enabled, do: sudo systemctl disable wpa-autoap@wlan1"
+systemctl enable wpa-autoap@wlan1
 
 echo ""
 echo "Creating /usr/local/bin/autoAP.conf..."

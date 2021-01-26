@@ -79,7 +79,7 @@ reconfigure_wpa_supplicant () {
 do_reset() {
     [ -f /var/run/autoAP.locked ] && rm -f /var/run/autoAP.locked
     [ -f /var/run/autoAP.unlock ] && rm -f /var/run/autoAP.unlock
-    [ -f /etc/systemd/network/11-wlan0.network~ ] && mv /etc/systemd/network/11-wlan0.network~ /etc/systemd/network/11-wlan0.network
+    [ -f /etc/systemd/network/11-wlan1.network~ ] && mv /etc/systemd/network/11-wlan1.network~ /etc/systemd/network/11-wlan1.network
 }
 #
 # Main code
