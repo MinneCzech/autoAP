@@ -117,6 +117,29 @@ network={
 }
 EOF
 
+
+chown pi:pi $wpafn
+
+wpafn0="/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"   # Config backup WiFi
+echo ""
+echo "Creating $wpafn0..."
+cat > $wpafn0 <<EOF
+country=$country
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+### local wifi ###
+network={
+    priority=1
+    ssid="$ssid"
+    psk="$psk"
+}
+EOF
+
+
+chown pi:pi $wpafn0
+
+
 cat > $wpafnTemplate <<EOF
 country=$country
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -135,7 +158,6 @@ network={
 EOF
 
 
-chown pi:pi $wpafn
 
 echo ""
 echo "Creating WiFi network files in /etc/systemd/network..."
